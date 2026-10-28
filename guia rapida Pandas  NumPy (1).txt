@@ -1,0 +1,113 @@
+Para Pandas:
+Exploración de datos:
+Solicitud                       Codigo sugerido
+Primer vistazo	                df.head()	Muestra las primeras 5 filas para ver si los datos tienen sentido.
+Tamaño del dataset	            df.shape	Te da el total de (filas, columnas).
+Diagnóstico de datos	        df.info()	Te muestra tipos de datos y cuántos valores no nulos tienes.
+Contar vacíos(NAN)	            df.isna().sum()	Te da el número exacto de celdas vacías por cada columna.
+Resumen numérico	            df.describe()	Te da el promedio, mínimo, máximo y los cuartiles de un tirón.
+Valores únicos	                df['col'].unique()	Lista todos los elementos distintos (ej: nombres de ciudades).
+Ranking / Conteo	            df['col'].value_counts()	Cuenta cuántas veces aparece cada categoría (ej: ¿cuál tienda vendió más?).
+Ver filas con nulos	            df[df['columna'].isna()]
+Ver filas SIN nulos	            df[df['columna'].notna()]
+
+
+Limpieza de datos:
+Eliminar nulos	                df.dropna()	Borra cualquier fila que tenga al menos un valor vacío.
+Rellenar nulos	                df.fillna(valor)	Cambia los vacíos por un número (ej: 0) o un texto.
+Borrar duplicados	            df.drop_duplicates()	Elimina filas que estén repetidas exactamente igual.
+Cambiar nombres	                df.rename(columns={'A': 'B'})	Renombra columnas (ideal para arreglar nombres mal escritos).
+Cambiar tipos	                df['col'].astype(int)	Convierte una columna a otro tipo (ej: de decimal a entero).
+Corregir texto	                df['col'].str.replace('A', 'B')	Busca y reemplaza palabras o letras dentro de una columna.
+
+Eliminación de Columnas y Filas:
+Solicitud                   Código Sugerido
+Eliminar una columna        df.drop(columns=['columna_A'])      Elimina la columna por su nombre.
+Eliminar varias             df.drop(columns=['col_1', 'col_2'])     Pasa una lista con los nombres que no quieras.
+Eliminar por índice         df.drop(df.index[0])               Borra la primera fila del dataset.
+Sobrescribir el cambio      df = df.drop(...)   Importante Si no asignas el resultado al df, la columna no se borrará realmente.
+
+
+Filtrado de datos:
+Solicitud	        Código Sugerido con ejemplos
+Por Fecha	        df[df['fecha'].dt.month == 12] (Solo ventas de Diciembre)
+Por Categoría	    df[df['Producto'] == 'Laptop'] (Solo Laptops)
+Por Rango Numérico	df[df['venta'] > 1000] (Ventas mayores a 1000)
+Varias Condiciones	df[(df['venta'] > 500) & (df['id_tienda'] == 1)] (Ventas > 500 en tienda 1)
+
+
+
+Error común en Condiciones: df[df['venta'] > 100 & df['tienda'] == 5] -> Error
+                            df[(df['venta'] > 100) & (df['tienda'] == 5)] -> Correcto   las condiciones siempre deben estar entre parentesis
+
+Guía de Agregación y Resumen (Group By):
+
+sintaxis básica:
+df.groupby('Columna_Grupo')['Columna_Calculo'].función_agregación()
+
+Desglose:
+df.groupby('col1'): ¿A quiénes vamos a agrupar? (Ej: las tiendas).
+['col2']: ¿Qué valor vamos a calcular? (Ej: las ventas).
+.sum(): ¿Qué operación haremos? (Puede ser .mean(), .count(), .max(), etc.).
+
+Casos de uso:
+Solicitud,                  Código Sugerido,   
+Agrupar por columna,        df.groupby('Categoría')['Venta'].sum()     Suma las ventas para cada categoría por separado.
+Múltiples estadísticas,     df.groupby('Tienda')['Venta'].agg(['mean', 'max'])  En una sola tabla ves el promedio y la venta más alta por tienda.
+Contar registros            df.groupby('Ciudad').size()         ¿Cuántas transacciones ocurrieron en cada ciudad?
+Ordenar resultados          df.sort_values(by='Venta', ascending=False)     Pone los valores más altos arriba (útil para ver el ""Top 10"").
+Crear Ranking               df['Venta'].rank(ascending=False)       "Le asigna un puesto (1º, 2º, 3º...) a cada fila según su valor."
+Pandas puede hacer en una línea lo que en SQL o Excel toma varios pasos.
+
+Ej de uso: 
+resultado = df[df['fecha'].dt.year == 2023].groupby('id_tienda')['venta'].sum().sort_values(ascending=False).head(5)
+
+# Comparación con SQL de .groupby del ejemplo:
+Parte del Código Pandas    Equivalente en SQL,     Función
+df[...]                     WHERE                  Filtrar los datos (ej: el año).
+.groupby('id_tienda')       GROUP BY               Definir bajo qué criterio agrupamos.
+['venta'].sum()             SELECT SUM(venta)      La operación matemática que queremos.
+.sort_values(...)           ORDER BY ... DESC      Ordenar los resultados.
+.head(5)                    LIMIT 5                Cantidad de resultados a mostrar.
+
+
+
+Para NumPy:
+
+Creación de Datos (Generación de Arrays): 
+np.array(): Convierte listas de Python en arrays de NumPy.
+np.zeros() / np.ones(): Crea arrays llenos de 0 o 1 (útil para inicializar pesos de modelos).
+np.arange(): Similar al range() de Python, pero devuelve un array.
+np.linspace(): Crea una cantidad específica de números espaciados uniformemente entre dos valores (importante para gráficas de funciones).
+np.logspace: Genera números espaciados uniformemente en una escala logarítmica. ej: alphas = np.logspace(-3, 2, 6) (genera 6 valores de 10^(-3) a 10^(2)). 
+
+Inspección y Forma (Reshaping):
+np.shape: Atributo para saber las dimensiones (filas, columnas).
+np.reshape(): Cambia la estructura de los datos (por ejemplo, pasar de una lista plana a una matriz de (10 x 10) sin cambiar los datos).
+np.astype(): Para cambiar el tipo de dato (ej. de float64 a int32 para ahorrar memoria).
+
+Funciones Estadísticas (Análisis Exploratorio):
+np.mean() / np.median(): Promedio y mediana.
+np.std() / np.var(): Desviación estándar y varianza (para medir la dispersión).
+np.sum(): Suma total. Muy importante usar el parámetro axis (0 para columnas, 1 para filas). axis=0: Operación hacia abajo (columnas). axis=1: Operación hacia el lado (filas).
+np.min() / np.max(): Valores extremos.
+
+Lógica y Filtrado (Limpieza):
+np.where(): Funciona como un "IF" vectorial. 
+Ej: np.where(datos > 0, 1, 0) (si es mayor a 0 pon un 1, si no, un 0).
+np.isnan(): Devuelve una máscara booleana identificando dónde
+ hay valores faltantes.
+np.unique(): Encuentra los valores únicos 
+(ideal para conocer las categorías de una variable).
+
+np.select(condlist, choicelist, default=0): es como un "Switch" o un "Case" de programación avanzado. Sirve para cuando tienes muchas condiciones
+ y quieres asignar valores distintos a cada una.
+ condlist (Lista de condiciones): Es una lista de máscaras booleanas (ej: [df['venta'] > 100, df['venta'] < 50]).
+choicelist (Lista de elecciones): Son los valores que se aplicarán. Si la primera condición es True, se asigna el primer valor de esta lista.
+default (Opcional): ¿Qué valor ponemos si ninguna de las condiciones se cumple? (Como el else final). Si no lo pones, por defecto pone 0.
+
+
+Generación Aleatoria (Simulaciones):
+np.random.rand(): Números aleatorios entre 0 y 1.
+np.random.randn(): Genera datos con una Distribución Normal (Media 0, Desviación 1). Es la más usada en estadística.
+np.random.randint(): Números enteros aleatorios en un rango.
